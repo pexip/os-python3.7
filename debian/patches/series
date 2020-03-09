@@ -43,3 +43,5 @@ CVE-2019-10160-1.diff
 CVE-2019-10160-2.diff
 CVE-2019-16056.diff
 CVE-2019-16935.diff
+
+native-md5.diff

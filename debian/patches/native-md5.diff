@@ -1,0 +1,72 @@
+--- a/Modules/_hashopenssl.c
++++ b/Modules/_hashopenssl.c
+@@ -65,7 +65,6 @@
+     static PyObject *CONST_ ## Name ## _name_obj = NULL; \
+     static EVP_MD_CTX *CONST_new_ ## Name ## _ctx_p = NULL;
+ 
+-DEFINE_CONSTS_FOR_NEW(md5)
+ DEFINE_CONSTS_FOR_NEW(sha1)
+ DEFINE_CONSTS_FOR_NEW(sha224)
+ DEFINE_CONSTS_FOR_NEW(sha256)
+@@ -358,7 +357,7 @@
+     }
+ 
+     digest = EVP_get_digestbyname(nameStr);
+-    if (!digest) {
++    if (!digest || digest == EVP_md5()) {
+         PyErr_SetString(PyExc_ValueError, "unknown hash function");
+         if (data_obj)
+             PyBuffer_Release(&view);
+@@ -457,7 +456,7 @@
+ {
+     EVPobject *self;
+ 
+-    if (!digest && !initial_ctx) {
++    if ((!digest || digest == EVP_md5()) && !initial_ctx) {
+         PyErr_SetString(PyExc_ValueError, "unsupported hash type");
+         return NULL;
+     }
+@@ -646,7 +645,7 @@
+     }
+ 
+     digest = EVP_get_digestbyname(name);
+-    if (digest == NULL) {
++    if (digest == NULL || digest == EVP_md5()) {
+         PyErr_SetString(PyExc_ValueError, "unsupported hash type");
+         goto end;
+     }
+@@ -1026,7 +1025,6 @@
+     } \
+ } while (0);
+ 
+-GEN_CONSTRUCTOR(md5)
+ GEN_CONSTRUCTOR(sha1)
+ GEN_CONSTRUCTOR(sha224)
+ GEN_CONSTRUCTOR(sha256)
+@@ -1043,7 +1041,6 @@
+ #endif
+     _HASHLIB_SCRYPT_METHODDEF
+     _HASHLIB_HMAC_DIGEST_METHODDEF
+-    CONSTRUCTOR_METH_DEF(md5),
+     CONSTRUCTOR_METH_DEF(sha1),
+     CONSTRUCTOR_METH_DEF(sha224),
+     CONSTRUCTOR_METH_DEF(sha256),
+@@ -1106,7 +1103,6 @@
+     PyModule_AddObject(m, "HASH", (PyObject *)&EVPtype);
+ 
+     /* these constants are used by the convenience constructors */
+-    INIT_CONSTRUCTOR_CONSTANTS(md5);
+     INIT_CONSTRUCTOR_CONSTANTS(sha1);
+     INIT_CONSTRUCTOR_CONSTANTS(sha224);
+     INIT_CONSTRUCTOR_CONSTANTS(sha256);
+--- a/Lib/test/test_hashlib.py
++++ b/Lib/test/test_hashlib.py
+@@ -117,7 +117,7 @@
+         if _hashlib:
+             # These two algorithms should always be present when this module
+             # is compiled.  If not, something was compiled wrong.
+-            self.assertTrue(hasattr(_hashlib, 'openssl_md5'))
++            # self.assertTrue(hasattr(_hashlib, 'openssl_md5'))
+             self.assertTrue(hasattr(_hashlib, 'openssl_sha1'))
+             for algorithm, constructors in self.constructors_to_test.items():
+                 constructor = getattr(_hashlib, 'openssl_'+algorithm, None)
