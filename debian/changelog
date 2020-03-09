@@ -1,6 +1,8 @@
 python3.7 (3.7.3-2+deb10u1pexip1) pexip; urgency=medium
 
   * Prepare Pexip packaging
+  * Apply force native MD5 patch
+  * Customize debian/sitecustomize.py.in
 
  -- Vincent Sanders <vince@pexip.com>  Sat, 15 Feb 2020 17:46:54 +0000
 

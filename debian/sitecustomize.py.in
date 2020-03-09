@@ -1,7 +1,10 @@
-# install the apport exception handler if available
+# Add Pexip site-packages
+import site
+site.addsitedir('/opt/pexip/lib/python3.7/site-packages')
+
 try:
-    import apport_python_hook
+    from si.apps.pexcrash.pycrash import PyCrash
 except ImportError:
     pass
 else:
-    apport_python_hook.install()
+    PyCrash.install_handler()
