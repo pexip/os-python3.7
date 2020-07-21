@@ -1,3 +1,9 @@
+python3.7 (3.7.3-2+deb10u1pexip3) pexip; urgency=medium
+
+  * Enable valgrind support
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 21 Jul 2020 08:55:41 +0100
+
 python3.7 (3.7.3-2+deb10u1pexip2) pexip; urgency=medium
 
   * Rebuild in buster environment
