@@ -1,3 +1,11 @@
+python3.7 (3.7.3-2+deb10u2) buster; urgency=medium
+
+  * CVE-2019-20907
+  * CVE-2020-14422
+  * CVE-2020-8492
+
+ -- Moritz Mühlenhoff <jmm@debian.org>  Sat, 25 Jul 2020 15:03:44 +0200
+
 python3.7 (3.7.3-2+deb10u1) buster; urgency=medium
 
   * CVE-2019-9740
