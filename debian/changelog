@@ -1,8 +1,9 @@
 python3.7 (3.7.3-2+deb10u2pexip1) pexip; urgency=medium
 
   * New upstream release
+  * Undo maintainer breakage - modify debian/control.in for our changes too
 
- -- Steve McIntyre <steve.mcintyre@pexip.com>  Fri, 07 Aug 2020 18:09:03 +0100
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Mon, 10 Aug 2020 10:48:46 +0100
 
 python3.7 (3.7.3-2+deb10u2) buster; urgency=medium
 
