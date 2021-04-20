@@ -1,3 +1,9 @@
+python3.7 (3.7.3-2+deb10u3pexip2) pexip; urgency=medium
+
+  * Add valgrind to control.in to avoid FTBFS.
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Tue, 20 Apr 2021 11:49:36 +0100
+
 python3.7 (3.7.3-2+deb10u3pexip1) pexip; urgency=medium
 
   * New upstream release.
