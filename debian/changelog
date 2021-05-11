@@ -1,3 +1,11 @@
+python3.7 (3.7.3-2+deb10u3pexip3) pexip; urgency=medium
+
+  * d/p/platform-lsbrelease.diff: remove
+  * d/p/platform-osrelease.diff: Make platform.linux_distribution() consider
+    os-release
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 11 May 2021 15:41:41 +0100
+
 python3.7 (3.7.3-2+deb10u3pexip2) pexip; urgency=medium
 
   * Add valgrind to control.in to avoid FTBFS.
