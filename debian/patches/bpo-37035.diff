@@ -1,0 +1,131 @@
+From a79b6c578fcd2ea8be29440fdd8a998e5527200f Mon Sep 17 00:00:00 2001
+From: Andrew Svetlov <andrew.svetlov@gmail.com>
+Date: Mon, 27 May 2019 18:52:05 +0300
+Subject: [PATCH] [3.7] bpo-37035: Don't log OSError (GH-13548) (#13594)
+
+https://bugs.python.org/issue37035.
+(cherry picked from commit 1f39c28e489cca0397fc4c3675d13569318122ac)
+
+Co-authored-by: Andrew Svetlov <andrew.svetlov@gmail.com>
+--- a/Lib/asyncio/base_events.py
++++ b/Lib/asyncio/base_events.py
+@@ -56,11 +56,6 @@
+ # before cleanup of cancelled handles is performed.
+ _MIN_CANCELLED_TIMER_HANDLES_FRACTION = 0.5
+ 
+-# Exceptions which must not call the exception handler in fatal error
+-# methods (_fatal_error())
+-_FATAL_ERROR_IGNORE = (BrokenPipeError,
+-                       ConnectionResetError, ConnectionAbortedError)
+-
+ _HAS_IPv6 = hasattr(socket, 'AF_INET6')
+ 
+ # Maximum timeout passed to select to avoid OS limitations
+--- a/Lib/asyncio/proactor_events.py
++++ b/Lib/asyncio/proactor_events.py
+@@ -96,7 +96,7 @@
+ 
+     def _fatal_error(self, exc, message='Fatal error on pipe transport'):
+         try:
+-            if isinstance(exc, base_events._FATAL_ERROR_IGNORE):
++            if isinstance(exc, OSError):
+                 if self._loop.get_debug():
+                     logger.debug("%r: %s", self, message, exc_info=True)
+             else:
+--- a/Lib/asyncio/selector_events.py
++++ b/Lib/asyncio/selector_events.py
+@@ -657,7 +657,7 @@
+ 
+     def _fatal_error(self, exc, message='Fatal error on transport'):
+         # Should be called from exception handler only.
+-        if isinstance(exc, base_events._FATAL_ERROR_IGNORE):
++        if isinstance(exc, OSError):
+             if self._loop.get_debug():
+                 logger.debug("%r: %s", self, message, exc_info=True)
+         else:
+--- a/Lib/asyncio/sslproto.py
++++ b/Lib/asyncio/sslproto.py
+@@ -696,7 +696,7 @@
+                 self._fatal_error(exc, 'Fatal error on SSL transport')
+ 
+     def _fatal_error(self, exc, message='Fatal error on transport'):
+-        if isinstance(exc, base_events._FATAL_ERROR_IGNORE):
++        if isinstance(exc, OSError):
+             if self._loop.get_debug():
+                 logger.debug("%r: %s", self, message, exc_info=True)
+         else:
+--- a/Lib/asyncio/unix_events.py
++++ b/Lib/asyncio/unix_events.py
+@@ -717,7 +717,7 @@
+ 
+     def _fatal_error(self, exc, message='Fatal error on pipe transport'):
+         # should be called by exception handler only
+-        if isinstance(exc, base_events._FATAL_ERROR_IGNORE):
++        if isinstance(exc, OSError):
+             if self._loop.get_debug():
+                 logger.debug("%r: %s", self, message, exc_info=True)
+         else:
+--- a/Lib/test/test_asyncio/test_selector_events.py
++++ b/Lib/test/test_asyncio/test_selector_events.py
+@@ -850,10 +850,23 @@
+         tr._force_close = mock.Mock()
+         tr._fatal_error(exc)
+ 
++        m_exc.assert_not_called()
++
++        tr._force_close.assert_called_with(exc)
++
++    @mock.patch('asyncio.log.logger.error')
++    def test_fatal_error_custom_exception(self, m_exc):
++        class MyError(Exception):
++            pass
++        exc = MyError()
++        tr = self.create_transport()
++        tr._force_close = mock.Mock()
++        tr._fatal_error(exc)
++
+         m_exc.assert_called_with(
+             test_utils.MockPattern(
+                 'Fatal error on transport\nprotocol:.*\ntransport:.*'),
+-            exc_info=(OSError, MOCK_ANY, MOCK_ANY))
++            exc_info=(MyError, MOCK_ANY, MOCK_ANY))
+ 
+         tr._force_close.assert_called_with(exc)
+ 
+@@ -1739,10 +1752,20 @@
+         err = ConnectionRefusedError()
+         transport._fatal_error(err)
+         self.assertFalse(self.protocol.error_received.called)
++        m_exc.assert_not_called()
++
++    @mock.patch('asyncio.base_events.logger.error')
++    def test_fatal_error_connected_custom_error(self, m_exc):
++        class MyException(Exception):
++            pass
++        transport = self.datagram_transport(address=('0.0.0.0', 1))
++        err = MyException()
++        transport._fatal_error(err)
++        self.assertFalse(self.protocol.error_received.called)
+         m_exc.assert_called_with(
+             test_utils.MockPattern(
+                 'Fatal error on transport\nprotocol:.*\ntransport:.*'),
+-            exc_info=(ConnectionRefusedError, MOCK_ANY, MOCK_ANY))
++            exc_info=(MyException, MOCK_ANY, MOCK_ANY))
+ 
+ 
+ if __name__ == '__main__':
+--- a/Lib/test/test_asyncio/test_unix_events.py
++++ b/Lib/test/test_asyncio/test_unix_events.py
+@@ -961,11 +961,7 @@
+         self.assertFalse(self.loop.readers)
+         self.assertEqual(bytearray(), tr._buffer)
+         self.assertTrue(tr.is_closing())
+-        m_logexc.assert_called_with(
+-            test_utils.MockPattern(
+-                'Fatal write error on pipe transport'
+-                '\nprotocol:.*\ntransport:.*'),
+-            exc_info=(OSError, MOCK_ANY, MOCK_ANY))
++        m_logexc.assert_not_called()
+         self.assertEqual(1, tr._conn_lost)
+         test_utils.run_briefly(self.loop)
+         self.protocol.connection_lost.assert_called_with(err)

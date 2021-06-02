@@ -49,3 +49,4 @@ CVE-2020-26116.patch
 CVE-2021-3177.patch
 native-md5.diff
 platform-osrelease.diff
+bpo-37035.diff

@@ -1,3 +1,9 @@
+python3.7 (3.7.3-2+deb10u3pexip4) pexip; urgency=medium
+
+  * d/p/bpo-37035.diff: Don't log OSError. Issue #37035
+
+ -- Huw Jones <huw@pexip.com>  Wed, 2 Jun 2021 10:53:27 +0100
+
 python3.7 (3.7.3-2+deb10u3pexip3) pexip; urgency=medium
 
   * d/p/platform-lsbrelease.diff: remove
