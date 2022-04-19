@@ -1,3 +1,9 @@
+python3.7 (3.7.3-2+deb10u3pexip5) pexip; urgency=medium
+
+  * Compile against libmpdec 2.5
+
+ -- Huw Jones <huw@pexip.com>  Tue, 19 Apr 2022 14:36:47 +0100
+
 python3.7 (3.7.3-2+deb10u3pexip4) pexip; urgency=medium
 
   * d/p/bpo-37035.diff: Don't log OSError. Issue #37035

@@ -50,3 +50,4 @@ CVE-2021-3177.patch
 native-md5.diff
 platform-osrelease.diff
 bpo-37035.diff
+mpdecimal-2.5.1.diff
