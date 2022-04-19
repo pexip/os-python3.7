@@ -1,6 +1,7 @@
 python3.7 (3.7.3-2+deb10u3pexip5) pexip; urgency=medium
 
   * Compile against libmpdec 2.5
+  * Fix expat testsuite (see https://github.com/python/cpython/pull/31471)
 
  -- Huw Jones <huw@pexip.com>  Tue, 19 Apr 2022 14:36:47 +0100
 
