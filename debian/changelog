@@ -1,3 +1,9 @@
+python3.7 (3.7.3-2+deb10u3pexip5) pexip; urgency=medium
+
+  * Support OpenSSL3
+
+ -- John-Mark Bell <jmb@pexip.com>  Fri, 13 May 2022 14:53:25 +0100
+
 python3.7 (3.7.3-2+deb10u3pexip4) pexip; urgency=medium
 
   * d/p/bpo-37035.diff: Don't log OSError. Issue #37035

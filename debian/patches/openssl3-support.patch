@@ -1,0 +1,16 @@
+diff --git a/Modules/_hashopenssl.c b/Modules/_hashopenssl.c
+index b69f16c..146850b 100644
+--- a/Modules/_hashopenssl.c
++++ b/Modules/_hashopenssl.c
+@@ -88,7 +88,11 @@ _setException(PyObject *exc)
+     ERR_clear_error();
+ 
+     lib = ERR_lib_error_string(errcode);
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+     func = ERR_func_error_string(errcode);
++#else
++    func = NULL;
++#endif
+     reason = ERR_reason_error_string(errcode);
+ 
+     if (lib && func) {
